@@ -1,10 +1,10 @@
 # Dear_Imgui
 
-#RUN
+### RUN
 ~~~
 make
 ~~~
-#CLEAN
+### CLEAN
  ~~~
  make clean
  ~~~
