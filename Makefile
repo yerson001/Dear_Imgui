@@ -19,14 +19,15 @@ IMGUI_DIR = ./imgui
 SOURCES = main.cpp
 SOURCES += $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
 SOURCES += $(IMGUI_DIR)/backends/imgui_impl_glfw.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
+SOURCES += $(IMGUI_DIR)/imgui_sfml/imgui-SFML.cpp
 OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
 UNAME_S := $(shell uname -s)
 LINUX_GL_LIBS = -lGL
 
-CXXFLAGS = -std=c++11 -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends
+CXXFLAGS = -std=c++11 -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -I$(IMGUI_DIR)/imgui_sfml
 CXXFLAGS += -g -Wall -Wformat
 LIBS =
-
+#--------------OPENCV----------
 # Establece la ruta de OpenCV en tu sistema
 OPENCV_LIBS = `pkg-config --libs opencv4`
 OPENCV_INCLUDE = `pkg-config --cflags opencv4`
@@ -36,6 +37,13 @@ CFLAGS += $(OPENCV_INCLUDE)
 CXXFLAGS += $(OPENCV_INCLUDE)
 
 LDFLAGS += $(OPENCV_LIBS)
+
+#------------SFML--------------
+CFLAGS+= $(SFML_INCLUDE)
+LDFLAGS+= $(SFML_LIBS)
+LDLIBS+= $(SFML_LIBRARIES)
+
+
 ##---------------------------------------------------------------------
 ## OPENGL ES
 ##---------------------------------------------------------------------
@@ -88,11 +96,15 @@ endif
 %.o:$(IMGUI_DIR)/backends/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
+%.o:$(IMGUI_DIR)/imgui_sfml/%.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+
 all: $(EXE)
 	@echo Build complete for $(ECHO_MESSAGE)
 
 $(EXE): $(OBJS)
-	$(CXX) -o $@ $^ $(CXXFLAGS) $(LIBS)
+	$(CXX) -o $@ $^ $(CXXFLAGS) $(LIBS) -lsfml-graphics -lsfml-window -lsfml-system
 
 clean:
 	rm -f $(EXE) $(OBJS)
